@@ -1,5 +1,6 @@
 // API client for RecThink
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api';
+const WS_BASE_URL = process.env.REACT_APP_WS_BASE_URL || 'ws://localhost:8000/ws';
 
 export const initializeChat = async (apiKey, model) => {
   const response = await fetch(`${API_BASE_URL}/initialize`, {
@@ -9,11 +10,11 @@ export const initializeChat = async (apiKey, model) => {
     },
     body: JSON.stringify({ api_key: apiKey, model }),
   });
-  
+
   if (!response.ok) {
     throw new Error(`Failed to initialize chat: ${response.statusText}`);
   }
-  
+
   return response.json();
 };
 
@@ -30,11 +31,11 @@ export const sendMessage = async (sessionId, message, options = {}) => {
       alternatives_per_round: options.alternativesPerRound,
     }),
   });
-  
+
   if (!response.ok) {
     throw new Error(`Failed to send message: ${response.statusText}`);
   }
-  
+
   return response.json();
 };
 
@@ -50,21 +51,21 @@ export const saveConversation = async (sessionId, filename = null, fullLog = fal
       full_log: fullLog,
     }),
   });
-  
+
   if (!response.ok) {
     throw new Error(`Failed to save conversation: ${response.statusText}`);
   }
-  
+
   return response.json();
 };
 
 export const listSessions = async () => {
   const response = await fetch(`${API_BASE_URL}/sessions`);
-  
+
   if (!response.ok) {
     throw new Error(`Failed to list sessions: ${response.statusText}`);
   }
-  
+
   return response.json();
 };
 
@@ -72,15 +73,15 @@ export const deleteSession = async (sessionId) => {
   const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
     method: 'DELETE',
   });
-  
+
   if (!response.ok) {
     throw new Error(`Failed to delete session: ${response.statusText}`);
   }
-  
+
   return response.json();
 };
 
 export const createWebSocketConnection = (sessionId) => {
-  const ws = new WebSocket(`ws://localhost:8000/ws/${sessionId}`);
+  const ws = new WebSocket(`${WS_BASE_URL}/${sessionId}`);
   return ws;
 };
